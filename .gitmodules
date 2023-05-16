@@ -1,0 +1,3 @@
+[submodule "lib/ExtendedIO"]
+	path = lib/ExtendedIO
+	url = https://github.com/ArchLeaders/ExtendedIO
