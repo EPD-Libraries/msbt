@@ -1,0 +1,7 @@
+add_executable(msbt_test
+    ./src/include/utils/file_util.h
+    ./src/main.cpp
+)
+
+target_include_directories(msbt_test PRIVATE ./src/include)
+target_link_libraries(msbt_test PUBLIC msbt)
