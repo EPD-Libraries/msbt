@@ -42,8 +42,18 @@ private:
   static_assert(sizeof(OffsetTable) == 0x04);
 
 public:
+  struct TextEntry {
+    void Fill(tcb::span<const u8> data);
+    std::wstring ToText();
+
+  private:
+    tcb::span<const u8> m_data;
+  };
+
+  TextEntry FromText(std::wstring text);
+
   TextSection(exio::BinaryReader& reader, size_t eof);
-  std::vector<tcb::span<const u8>> m_text_entries;
+  std::vector<TextEntry> m_text_entries;
 };
 
 class MSBT {

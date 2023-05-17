@@ -50,10 +50,18 @@ LabelSection::LabelSection(exio::BinaryReader& reader) {
 
 AttributeSection::AttributeSection(exio::BinaryReader& reader) {}
 
+void TextSection::TextEntry::Fill(tcb::span<const u8> data) {
+  m_data = data;
+}
+
+std::wstring TextSection::TextEntry::ToText() {}
+
+TextSection::TextEntry TextSection::FromText(std::wstring text) {}
+
 TextSection::TextSection(exio::BinaryReader& reader, size_t eof) {
   const auto text_table_offset = reader.Tell();
   const auto table = *reader.Read<OffsetTable>();
-  m_text_entries = std::vector<tcb::span<const u8>>{table.offset_count};
+  m_text_entries = std::vector<TextSection::TextEntry>{table.offset_count};
 
   for (size_t i = 0; i < table.offset_count; i++) {
     const auto offset_ptr = text_table_offset + sizeof(OffsetTable) + sizeof(u32) * i;
@@ -65,7 +73,7 @@ TextSection::TextSection(exio::BinaryReader& reader, size_t eof) {
       next_offset = eof - text_table_offset;
     }
 
-    m_text_entries[i] = reader.span().subspan(text_table_offset + offset, next_offset - offset);
+    m_text_entries[i].Fill(reader.span().subspan(text_table_offset + offset, next_offset - offset));
   }
 
   reader.Seek(eof);
