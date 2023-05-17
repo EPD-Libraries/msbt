@@ -54,10 +54,6 @@ void TextSection::TextEntry::Fill(tcb::span<const u8> data) {
   m_data = data;
 }
 
-std::wstring TextSection::TextEntry::ToText() {}
-
-TextSection::TextEntry TextSection::FromText(std::wstring text) {}
-
 TextSection::TextSection(exio::BinaryReader& reader, size_t eof) {
   const auto text_table_offset = reader.Tell();
   const auto table = *reader.Read<OffsetTable>();

@@ -14,6 +14,7 @@ enable_testing()
 
 add_library(msbt STATIC
     ./src/msbt.cpp
+    ./src/msbt_text.cpp
     ./src/include/msbt/msbt.h
 )
 
