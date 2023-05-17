@@ -43,7 +43,7 @@ private:
 
 public:
   TextSection(exio::BinaryReader& reader, size_t eof);
-  std::vector<std::wstring> m_text_entries;
+  std::vector<tcb::span<const u8>> m_text_entries;
 };
 
 class MSBT {

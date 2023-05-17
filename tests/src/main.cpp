@@ -9,8 +9,7 @@ int main(int argc, char** argv) {
   auto msbt = oepd::msbt::FromBinary(file);
 
   for (const auto entry : msbt.m_label_section->m_label_entries) {
-    std::cout << entry.second << ": ";
-    std::wcout << msbt.m_text_section->m_text_entries[entry.first] << std::endl;
+    std::cout << entry.second << std::endl;
   }
 
   std::cout << "Count: " << msbt.m_label_section->m_label_entries.size() << std::endl;

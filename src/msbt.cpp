@@ -53,7 +53,7 @@ AttributeSection::AttributeSection(exio::BinaryReader& reader) {}
 TextSection::TextSection(exio::BinaryReader& reader, size_t eof) {
   const auto text_table_offset = reader.Tell();
   const auto table = *reader.Read<OffsetTable>();
-  m_text_entries = std::vector<std::wstring>{table.offset_count};
+  m_text_entries = std::vector<tcb::span<const u8>>{table.offset_count};
 
   for (size_t i = 0; i < table.offset_count; i++) {
     const auto offset_ptr = text_table_offset + sizeof(OffsetTable) + sizeof(u32) * i;
@@ -65,7 +65,7 @@ TextSection::TextSection(exio::BinaryReader& reader, size_t eof) {
       next_offset = eof - text_table_offset;
     }
 
-    m_text_entries[i] = reader.ReadWString(text_table_offset + offset, next_offset - offset);
+    m_text_entries[i] = reader.span().subspan(text_table_offset + offset, next_offset - offset);
   }
 
   reader.Seek(eof);
