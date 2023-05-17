@@ -54,7 +54,7 @@ void TextSection::TextEntry::Fill(tcb::span<const u8> data) {
   m_data = data;
 }
 
-TextSection::TextSection(exio::BinaryReader& reader, size_t eof) {
+TextSection::TextSection(exio::BinaryReader& reader, size_t table_size) {
   const auto text_table_offset = reader.Tell();
   const auto table = *reader.Read<OffsetTable>();
   m_text_entries = std::vector<TextSection::TextEntry>{table.offset_count};
@@ -66,13 +66,13 @@ TextSection::TextSection(exio::BinaryReader& reader, size_t eof) {
 
     // Don't read past EOF
     if (i == table.offset_count - 1) {
-      next_offset = eof - text_table_offset;
+      next_offset = table_size;
     }
 
     m_text_entries[i].Fill(reader.span().subspan(text_table_offset + offset, next_offset - offset));
   }
 
-  reader.Seek(eof);
+  reader.Seek(table_size);
 }
 
 MSBT::MSBT(tcb::span<const u8> data) : m_reader{data, exio::Endianness::Little} {
@@ -83,13 +83,14 @@ MSBT::MSBT(tcb::span<const u8> data) : m_reader{data, exio::Endianness::Little} 
   }
 
   for (size_t i = 0; i < header.num_sections; i++) {
-    const auto magic = m_reader.Read<TableHeader>()->magic;
+    const auto table_header = *m_reader.Read<TableHeader>();
+    const auto magic = table_header.magic;
     if (magic == LabelSectionMagic) {
       m_label_section = LabelSection{m_reader};
     } else if (magic == AttributeSectionMagic) {
       m_attribute_section = AttributeSection{m_reader};
     } else if (magic == TextSectionMagic) {
-      m_text_section = TextSection{m_reader, header.file_size};
+      m_text_section = TextSection{m_reader, table_header.table_size};
     } else {
       throw exio::InvalidDataError("Unsupported data block: " + std::string{magic.begin(), magic.end()});
     }
