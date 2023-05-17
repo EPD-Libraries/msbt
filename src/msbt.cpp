@@ -113,11 +113,8 @@ MSBT::MSBT(tcb::span<const u8> data) : m_reader{data, exio::Endianness::Little} 
   std::optional<AttributeSection> attribute_section;
   std::optional<TextSection> text_section;
 
-parse:
-  const auto table_header = m_reader.Read<TableHeader>();
-
-  if (table_header) {
-    const auto magic = table_header->magic;
+  for (size_t i = 0; i < header.num_sections; i++) {
+    const auto magic = m_reader.Read<TableHeader>()->magic;
     if (magic == LabelSectionMagic) {
       label_section = LabelSection{m_reader};
     } else if (magic == AttributeSectionMagic) {
@@ -129,7 +126,6 @@ parse:
     }
 
     m_reader.Seek(exio::util::AlignUp(m_reader.Tell(), 0x10));
-    goto parse;
   }
 
   if (!label_section) {
