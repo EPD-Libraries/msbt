@@ -28,79 +28,48 @@ struct TableHeader {
 };
 static_assert(sizeof(TableHeader) == 0x10);
 
-struct LabelSection {
-private:
-  struct OffsetTable {
-    u32 offset_count;
-  };
-  static_assert(sizeof(OffsetTable) == 0x04);
+LabelSection::LabelSection(exio::BinaryReader& reader) {
+  const auto label_table_offset = reader.Tell();
+  const auto table = *reader.Read<OffsetTable>();
 
-  struct OffsetTableEntry {
-    u32 string_count;
-    u32 string_offset;
-  };
-  static_assert(sizeof(OffsetTableEntry) == 0x08);
+  for (size_t i = 0; i < table.offset_count; i++) {
+    const auto offset_entry =
+        *reader.Read<OffsetTableEntry>(label_table_offset + sizeof(OffsetTable) + sizeof(OffsetTableEntry) * i);
 
-public:
-  LabelSection(exio::BinaryReader& reader) {
-    const auto label_table_offset = reader.Tell();
-    const auto table = *reader.Read<OffsetTable>();
+    size_t offset = label_table_offset + offset_entry.string_offset;
+    for (size_t j = 0; j < offset_entry.string_count; j++) {
+      const auto size = *reader.Read<u8>(offset);
+      const auto label = reader.ReadString(offset += sizeof(u8), size);
+      const auto index = *reader.Read<u32>(offset += size);
+      offset += sizeof(u32);
 
-    for (size_t i = 0; i < table.offset_count; i++) {
-      const auto offset_entry =
-          *reader.Read<OffsetTableEntry>(label_table_offset + sizeof(OffsetTable) + sizeof(OffsetTableEntry) * i);
-
-      size_t offset = label_table_offset + offset_entry.string_offset;
-      for (size_t j = 0; j < offset_entry.string_count; j++) {
-        const auto size = *reader.Read<u8>(offset);
-        const auto label = reader.ReadString(offset += sizeof(u8), size);
-        const auto index = *reader.Read<u32>(offset += size);
-        offset += sizeof(u32);
-
-        m_label_entries.push_back(std::pair<size_t, std::string>{index, label});
-      }
+      m_label_entries.push_back(std::pair<size_t, std::string>{index, label});
     }
   }
+}
 
-  std::vector<std::pair<size_t, std::string>> m_label_entries{};
-};
+AttributeSection::AttributeSection(exio::BinaryReader& reader) {}
 
-struct AttributeSection {
-public:
-  AttributeSection(exio::BinaryReader& reader) {}
-};
+TextSection::TextSection(exio::BinaryReader& reader, size_t eof) {
+  const auto text_table_offset = reader.Tell();
+  const auto table = *reader.Read<OffsetTable>();
+  m_text_entries = std::vector<std::wstring>{table.offset_count};
 
-struct TextSection {
-private:
-  struct OffsetTable {
-    u32 offset_count;
-  };
-  static_assert(sizeof(OffsetTable) == 0x04);
+  for (size_t i = 0; i < table.offset_count; i++) {
+    const auto offset_ptr = text_table_offset + sizeof(OffsetTable) + sizeof(u32) * i;
+    const auto offset = *reader.Read<u32>(offset_ptr);
+    auto next_offset = *reader.Read<u32>(offset_ptr + sizeof(u32));
 
-public:
-  TextSection(exio::BinaryReader& reader, size_t eof) {
-    const auto text_table_offset = reader.Tell();
-    const auto table = *reader.Read<OffsetTable>();
-    m_text_entries = std::vector<std::wstring>{table.offset_count};
-
-    for (size_t i = 0; i < table.offset_count; i++) {
-      const auto offset_ptr = text_table_offset + sizeof(OffsetTable) + sizeof(u32) * i;
-      const auto offset = *reader.Read<u32>(offset_ptr);
-      auto next_offset = *reader.Read<u32>(offset_ptr + sizeof(u32));
-
-      // Don't read past EOF
-      if (i == table.offset_count - 1) {
-        next_offset = eof - text_table_offset;
-      }
-
-      m_text_entries[i] = reader.ReadWString(text_table_offset + offset, next_offset - offset);
+    // Don't read past EOF
+    if (i == table.offset_count - 1) {
+      next_offset = eof - text_table_offset;
     }
 
-    reader.Seek(eof);
+    m_text_entries[i] = reader.ReadWString(text_table_offset + offset, next_offset - offset);
   }
 
-  std::vector<std::wstring> m_text_entries;
-};
+  reader.Seek(eof);
+}
 
 MSBT::MSBT(tcb::span<const u8> data) : m_reader{data, exio::Endianness::Little} {
   const auto header = *m_reader.Read<Header>();
@@ -109,18 +78,14 @@ MSBT::MSBT(tcb::span<const u8> data) : m_reader{data, exio::Endianness::Little} 
     throw exio::InvalidDataError("Invalid MSBT magic");
   }
 
-  std::optional<LabelSection> label_section;
-  std::optional<AttributeSection> attribute_section;
-  std::optional<TextSection> text_section;
-
   for (size_t i = 0; i < header.num_sections; i++) {
     const auto magic = m_reader.Read<TableHeader>()->magic;
     if (magic == LabelSectionMagic) {
-      label_section = LabelSection{m_reader};
+      m_label_section = LabelSection{m_reader};
     } else if (magic == AttributeSectionMagic) {
-      attribute_section = AttributeSection{m_reader};
+      m_attribute_section = AttributeSection{m_reader};
     } else if (magic == TextSectionMagic) {
-      text_section = TextSection{m_reader, header.file_size};
+      m_text_section = TextSection{m_reader, header.file_size};
     } else {
       throw exio::InvalidDataError("Unsupported data block: " + std::string{magic.begin(), magic.end()});
     }
@@ -128,9 +93,9 @@ MSBT::MSBT(tcb::span<const u8> data) : m_reader{data, exio::Endianness::Little} 
     m_reader.Seek(exio::util::AlignUp(m_reader.Tell(), 0x10));
   }
 
-  if (!label_section) {
+  if (!m_label_section) {
     throw exio::InvalidDataError("The label section (LBL1) was not found");
-  } else if (!text_section) {
+  } else if (!m_text_section) {
     throw exio::InvalidDataError("The text section (TXT2) was not found");
   }
 }
