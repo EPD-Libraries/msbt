@@ -44,13 +44,14 @@ private:
 public:
   struct TextEntry {
     void Fill(tcb::span<const u8> data);
-    std::wstring ToText();
+
+    static TextEntry FromText(std::wstring text);
+    std::wstring ToText(size_t indent_level = 0, bool one_line = false);
 
   private:
     tcb::span<const u8> m_data;
+    exio::BinaryReader m_reader;
   };
-
-  TextEntry FromText(std::wstring text);
 
   TextSection(exio::BinaryReader& reader, size_t eof);
   std::vector<TextEntry> m_text_entries;

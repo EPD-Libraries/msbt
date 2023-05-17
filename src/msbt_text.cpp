@@ -4,9 +4,42 @@ namespace oepd {
 
 namespace msbt {
 
-std::wstring TextSection::TextEntry::ToText() {}
+std::wstring TextSection::TextEntry::ToText(size_t indent_level, bool one_line) {
+  size_t size = m_data.size() / sizeof(wchar_t);
+  size_t idx = 0;
+  std::wstring wdata{reinterpret_cast<const wchar_t*>(m_data.begin()), size};
 
-TextSection::TextEntry TextSection::FromText(std::wstring text) {}
+  std::wstring text(indent_level, L' ');
+
+ReadByte:
+  if (idx == size) {
+    return text;
+  }
+
+  if (wdata[idx] == 0x0E) {
+    const auto group = *m_reader.Read<u16>((++idx) * 2);
+    const auto type = *m_reader.Read<u16>((++idx) * 2);
+    const auto data_size = *m_reader.Read<u16>((++idx) * 2);
+
+    text += L':' + std::to_wstring(group) + L':' + std::to_wstring(type) + L':' + std::to_wstring(data_size) + L':';
+    idx += (data_size / 2) + 1;
+  } else if (wdata[idx] == 0x00) {
+    idx++;
+  } else if (wdata[idx] == 0x0A) {
+    if (one_line) {
+      text += L"\\n";
+    } else {
+      text += L"\n" + std::wstring(indent_level, L' ');
+    }
+    idx++;
+  } else {
+    text += wdata[idx++];
+  }
+
+  goto ReadByte;
+}
+
+TextSection::TextEntry TextSection::TextEntry::FromText(std::wstring text) {}
 
 }  // namespace msbt
 

@@ -52,6 +52,7 @@ AttributeSection::AttributeSection(exio::BinaryReader& reader) {}
 
 void TextSection::TextEntry::Fill(tcb::span<const u8> data) {
   m_data = data;
+  m_reader = {data, exio::Endianness::Little};
 }
 
 TextSection::TextSection(exio::BinaryReader& reader, size_t table_size) {

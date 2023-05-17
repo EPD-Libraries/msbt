@@ -23,7 +23,7 @@ target_include_directories(msbt PUBLIC ./src/include)
 if(MSVC)
     target_compile_options(msbt PRIVATE /W4 /wd4244 /wd4127 /Zc:__cplusplus)
 else()
-    target_compile_options(msbt PRIVATE -Wall -Wextra -fno-plt)
+    target_compile_options(msbt PRIVATE -Wall -Wextra -fno-plt -fshort-wchar)
 endif()
 
 set(BUILD_TESTING ON)
