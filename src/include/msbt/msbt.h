@@ -8,9 +8,7 @@
 #include <exio/util/magic_utils.h>
 #include <nonstd/span.h>
 
-namespace oepd {
-
-namespace msbt {
+namespace oepd::msbt {
 
 struct LabelSection {
   struct OffsetTable {
@@ -73,6 +71,4 @@ private:
 
 MSBT FromBinary(tcb::span<const u8> data);
 
-}  // namespace msbt
-
-}  // namespace oepd
+}  // namespace oepd::msbt

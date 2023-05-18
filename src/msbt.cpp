@@ -1,8 +1,6 @@
 #include "msbt/msbt.h"
 
-namespace oepd {
-
-namespace msbt {
+namespace oepd::msbt {
 
 constexpr auto MsbtMagic = exio::util::MakeMagic("MsgStdBn");
 constexpr auto LabelSectionMagic = exio::util::MakeMagic("LBL1");
@@ -114,6 +112,4 @@ MSBT FromBinary(tcb::span<const u8> data) {
   return MSBT{data};
 }
 
-}  // namespace msbt
-
-}  // namespace oepd
+}  // namespace oepd::msbt

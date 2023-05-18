@@ -1,9 +1,7 @@
 #include "msbt/msbt.h"
-#include "tags.h"
+#include "msbt/tags.h"
 
-namespace oepd {
-
-namespace msbt {
+namespace oepd::msbt {
 
 std::wstring TextSection::TextEntry::ToText(size_t indent_level, bool one_line) {
   size_t size = m_data.size() / sizeof(wchar_t);
@@ -42,6 +40,4 @@ ReadByte:
 
 TextSection::TextEntry TextSection::TextEntry::FromText(std::wstring text) {}
 
-}  // namespace msbt
-
-}  // namespace oepd
+}  // namespace oepd::msbt
