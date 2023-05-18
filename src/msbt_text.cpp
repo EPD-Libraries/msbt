@@ -1,4 +1,5 @@
 #include "msbt/msbt.h"
+#include "tags.h"
 
 namespace oepd {
 
@@ -21,8 +22,8 @@ ReadByte:
     const auto type = *m_reader.Read<u16>((++idx) * 2);
     const auto data_size = *m_reader.Read<u16>((++idx) * 2);
 
-    text += L':' + std::to_wstring(group) + L':' + std::to_wstring(type) + L':' + std::to_wstring(data_size) + L':';
     idx += (data_size / 2) + 1;
+    text += tags::GetText(group, type, m_data.subspan(idx * 2 + size));
   } else if (wdata[idx] == 0x00) {
     idx++;
   } else if (wdata[idx] == 0x0A) {
