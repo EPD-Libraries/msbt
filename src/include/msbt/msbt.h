@@ -44,7 +44,7 @@ public:
     void Fill(tcb::span<const u8> data);
 
     static TextEntry FromText(std::wstring text);
-    std::wstring ToText(size_t indent_level = 0, bool one_line = false);
+    std::string ToText(size_t indent_level = 0, bool one_line = false);
 
   private:
     tcb::span<const u8> m_data;

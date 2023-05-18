@@ -114,10 +114,8 @@ std::vector<u8> MSBT::ToBinary() {
 
 std::string MSBT::ToText() {
   std::string result;
-  std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-
   for (const auto entry : m_label_section->m_label_entries) {
-    result += entry.second + ": |\n" + converter.to_bytes(m_text_section->m_text_entries[entry.first].ToText(2));
+    result += entry.second + ": |\n" + m_text_section->m_text_entries[entry.first].ToText(2) + '\n';
   }
 
   return result;
