@@ -13,8 +13,9 @@ include(CTest)
 enable_testing()
 
 add_library(msbt STATIC
-    ./src/msbt.cpp
+    ./src/tags.h
     ./src/msbt_text.cpp
+    ./src/msbt.cpp
     ./src/include/msbt/msbt.h
 )
 
@@ -31,7 +32,6 @@ add_subdirectory(./lib/ExtendedIO)
 target_link_libraries(msbt
     PUBLIC
     ExtendedIO
-    PRIVATE
 )
 
 if(BUILD_TESTING)
