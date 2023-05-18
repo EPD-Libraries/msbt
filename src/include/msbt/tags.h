@@ -9,6 +9,6 @@ namespace oepd::msbt::tags {
 std::string GetText(u16 group_id, u16 type_id, tcb::span<const u8> data);
 
 /// Converts a pseudo-HTML tag to an MSBT binary tag data
-tcb::span<const u8> GetBinary(std::wstring tag);
+tcb::span<const u8> GetBinary(std::string tag);
 
 }  // namespace oepd::msbt::tags
