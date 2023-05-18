@@ -13,10 +13,12 @@ include(CTest)
 enable_testing()
 
 add_library(msbt STATIC
-    ./src/tags.h
-    ./src/msbt_text.cpp
     ./src/msbt.cpp
+    ./src/msbt_text.cpp
     ./src/include/msbt/msbt.h
+
+    ./src/tags.cpp
+    ./src/include/msbt/tags.h
 )
 
 target_include_directories(msbt PUBLIC ./src/include)
