@@ -14,11 +14,16 @@ enable_testing()
 
 add_library(msbt STATIC
     ./src/msbt.cpp
-    ./src/msbt_text.cpp
     ./src/include/msbt/msbt.h
+
+    ./src/sections/attribute_section.cpp
+    ./src/sections/label_section.cpp
+    ./src/sections/text_section.cpp
 
     ./src/tags.cpp
     ./src/include/msbt/tags.h
+
+    ./src/include/msbt/tags/animation_tag.h
 )
 
 target_include_directories(msbt PUBLIC ./src/include)

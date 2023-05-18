@@ -6,58 +6,72 @@
 #include <exio/swap.h>
 #include <exio/types.h>
 #include <exio/util/magic_utils.h>
+#include <msbt/tags.h>
 #include <nonstd/span.h>
 
 namespace oepd::msbt {
 
-struct LabelSection {
-  struct OffsetTable {
-    u32 offset_count;
-  };
-  static_assert(sizeof(OffsetTable) == 0x04);
+/// Common Section Header
+struct SectionHeader {
+  std::array<char, 4> magic;
+  u32 table_size;
+  u64 _padding;
+};
+static_assert(sizeof(SectionHeader) == 0x10);
 
-  struct OffsetTableEntry {
+/// Common Section Table
+struct SectionTable {
+  u32 offset_count;
+};
+static_assert(sizeof(SectionTable) == 0x04);
+
+/// MSBT Label Section (LBL1)
+struct LabelSection {
+  struct LabelEntry {
     u32 string_count;
     u32 string_offset;
   };
-  static_assert(sizeof(OffsetTableEntry) == 0x08);
+  static_assert(sizeof(LabelEntry) == 0x08);
 
 public:
   LabelSection(exio::BinaryReader& reader);
   std::vector<std::pair<size_t, std::string>> m_label_entries{};
 };
 
+/// MSBT Attribute Section (ATR1)
 struct AttributeSection {
 public:
   AttributeSection(exio::BinaryReader& reader);
 };
 
+/// MSBT Text Section (TXT2)
 struct TextSection {
-private:
-  struct OffsetTable {
-    u32 offset_count;
-  };
-  static_assert(sizeof(OffsetTable) == 0x04);
-
 public:
+  struct TextEntryValue {
+  public:
+    TextEntryValue(tags::Tag* tag);
+    TextEntryValue(std::string text);
+
+    tags::Tag* m_tag = nullptr;
+    std::optional<std::string> m_text;
+  };
+
   struct TextEntry {
     void Fill(tcb::span<const u8> data);
 
-    static TextEntry FromText(std::wstring text);
+    static TextEntry FromText(std::string text);
     std::string ToText(size_t indent_level = 0, bool one_line = false);
-
-  private:
-    tcb::span<const u8> m_data;
-    exio::BinaryReader m_reader;
+    std::vector<TextEntryValue> m_values;
   };
 
-  TextSection(exio::BinaryReader& reader, size_t eof);
+  TextSection(exio::BinaryReader& reader, size_t table_size);
   std::vector<TextEntry> m_text_entries;
 };
 
 class MSBT {
 public:
   MSBT(tcb::span<const u8> data);
+  MSBT(std::string text);
 
   std::vector<u8> ToBinary();
   std::string ToText();
@@ -71,5 +85,6 @@ private:
 };
 
 MSBT FromBinary(tcb::span<const u8> data);
+MSBT FromText(std::string text);
 
 }  // namespace oepd::msbt

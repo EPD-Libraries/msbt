@@ -1,8 +1,8 @@
+#include <optional>
+
 #include "msbt/tags.h"
 
 namespace oepd::msbt::tags {
-
-constexpr char hexmap[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
 
 std::string hex_str(tcb::span<const u8> data) {
   size_t size = data.size();
@@ -13,17 +13,33 @@ std::string hex_str(tcb::span<const u8> data) {
   }
 
   return s;
+}  // namespace oepd::msbt::tags
+
+Tag* FillTag(u16 group_id, u16 type_id, tcb::span<const u8> data) {
+  Tag* tag;
+  if (group_id == 201) {
+    tag = new UnknownTag;
+  } else {
+    tag = new UnknownTag;
+  }
+
+  tag->Fill(group_id, type_id, data);
+  return tag;
 }
 
-std::string GetText(u16 group_id, u16 type_id, tcb::span<const u8> data) {
-  // All tag types will be identified here
-  // and sent to a tag class for processing
-  return '<' + std::to_string(group_id) + " Type='" + std::to_string(type_id) +
-         (data.size() > 0 ? "' Data='" + hex_str(data) + "'/>" : "'/>");
+void UnknownTag::Fill(u16 group_id, u16 type_id, tcb::span<const u8> data) {
+  m_group = group_id;
+  m_type = type_id;
+  m_data = data;
 }
 
-tcb::span<const u8> GetBinary(std::string tag) {
-  return {};
+void UnknownTag::Fill(std::string text) {}
+
+std::string UnknownTag::ToText() {
+  return "<" + std::to_string(m_group) + " Type='" + std::to_string(m_type) +
+         (m_data.size() > 0 ? "' Data='" + hex_str(m_data) + "'/>" : "'/>");
 }
+
+std::vector<u8> UnknownTag::ToBinary() {}
 
 }  // namespace oepd::msbt::tags
