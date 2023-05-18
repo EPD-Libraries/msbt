@@ -1,3 +1,7 @@
+#include <codecvt>
+#include <locale>
+#include <string>
+
 #include "msbt/msbt.h"
 
 namespace oepd::msbt {
@@ -106,6 +110,17 @@ MSBT::MSBT(tcb::span<const u8> data) : m_reader{data, exio::Endianness::Little} 
 
 std::vector<u8> MSBT::ToBinary() {
   return {};
+}
+
+std::string MSBT::ToText() {
+  std::string result;
+  std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+
+  for (const auto entry : m_label_section->m_label_entries) {
+    result += entry.second + ": |\n" + converter.to_bytes(m_text_section->m_text_entries[entry.first].ToText(2));
+  }
+
+  return result;
 }
 
 MSBT FromBinary(tcb::span<const u8> data) {

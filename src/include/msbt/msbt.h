@@ -60,6 +60,7 @@ public:
   MSBT(tcb::span<const u8> data);
 
   std::vector<u8> ToBinary();
+  std::string ToText();
 
   std::optional<LabelSection> m_label_section;
   std::optional<AttributeSection> m_attribute_section;
