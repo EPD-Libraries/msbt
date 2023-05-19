@@ -1,15 +1,12 @@
 #pragma once
 
-#include <exio/types.h>
+#include <exio/binary_writer.h>
+#include <exio/error.h>
 #include <iostream>
-#include <nonstd/span.h>
+#include <optional>
 #include <vector>
 
 namespace oepd::msbt::tags {
-
-constexpr char hexmap[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
-
-std::string hex_str(tcb::span<const u8> data);
 
 class Tag {
 public:
@@ -20,7 +17,7 @@ public:
   virtual void Fill(std::string text) = 0;
 
   virtual std::string ToText() = 0;
-  virtual std::vector<u8> ToBinary() = 0;
+  virtual void ToBinary(exio::BinaryWriter& writer) = 0;
 };
 
 /// Finds and create a new tag based from the provided arguments
@@ -32,11 +29,14 @@ public:
   void Fill(std::string text) override;
 
   std::string ToText() override;
-  std::vector<u8> ToBinary() override;
+  void ToBinary(exio::BinaryWriter& writer) override;
 
   u16 m_group;
   u16 m_type;
   tcb::span<const u8> m_data;
+
+private:
+  std::optional<std::vector<u8>> m_private_data;
 };
 
 }  // namespace oepd::msbt::tags
