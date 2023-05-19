@@ -1,19 +1,7 @@
-#include <optional>
-
 #include "msbt/tags.h"
+#include "util.h"
 
 namespace oepd::msbt::tags {
-
-std::string hex_str(tcb::span<const u8> data) {
-  size_t size = data.size();
-  std::string s(size * 2, ' ');
-  for (size_t i = 0; i < size; ++i) {
-    s[2 * i] = hexmap[(data[i] & 0xF0) >> 4];
-    s[2 * i + 1] = hexmap[data[i] & 0x0F];
-  }
-
-  return s;
-}  // namespace oepd::msbt::tags
 
 Tag* FillTag(u16 group_id, u16 type_id, tcb::span<const u8> data) {
   Tag* tag;
@@ -33,13 +21,38 @@ void UnknownTag::Fill(u16 group_id, u16 type_id, tcb::span<const u8> data) {
   m_data = data;
 }
 
-void UnknownTag::Fill(std::string text) {}
+void UnknownTag::Fill(std::string text) {
+  if (text[0] != '<' || text.back() != '>') {
+    throw exio::InvalidDataError("Invalid tag syntax");
+  }
+
+  size_t pos = 0;
+
+  // Parse group name
+  std::string group;
+  while (text[++pos] != ' ') {
+    group += text[pos];
+  }
+
+  m_group = stoi(group);
+
+  // Parse node params
+  const auto params = util::parse_params(text, --pos);
+  for (const auto entry : params) {
+    if (entry.first == "Type") {
+      m_type = stoi(entry.second);
+    } else if (entry.first == "Data") {
+      m_private_data = util::from_hex(entry.second);
+      m_data = *m_private_data;
+    }
+  }
+}
 
 std::string UnknownTag::ToText() {
   return "<" + std::to_string(m_group) + " Type='" + std::to_string(m_type) +
-         (m_data.size() > 0 ? "' Data='" + hex_str(m_data) + "'/>" : "'/>");
+         (m_data.size() > 0 ? "' Data='" + util::to_hex(m_data) + "'/>" : "'/>");
 }
 
-std::vector<u8> UnknownTag::ToBinary() {}
+void UnknownTag::ToBinary(exio::BinaryWriter& writer) {}
 
 }  // namespace oepd::msbt::tags
