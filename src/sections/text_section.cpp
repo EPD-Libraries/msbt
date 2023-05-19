@@ -77,7 +77,7 @@ std::string TextSection::TextEntry::ToText(size_t indent_level, bool one_line) {
       result += value.m_tag->ToText();
     } else {
       std::string utf8 = converter.to_bytes(*value.m_text);
-      util::replace_all(utf8, "\n", "\n" + indentation);
+      util::replace_all(utf8, "\n", (one_line ? "\\n" : "\n") + indentation);
       result += utf8;
     }
   }
