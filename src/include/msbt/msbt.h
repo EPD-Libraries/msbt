@@ -34,6 +34,7 @@ struct LabelSection {
   static_assert(sizeof(LabelEntry) == 0x08);
 
 public:
+  LabelSection() {}
   LabelSection(exio::BinaryReader& reader);
   std::vector<std::pair<size_t, std::string>> m_label_entries{};
 };
@@ -57,13 +58,15 @@ public:
   };
 
   struct TextEntry {
-    void Fill(tcb::span<const u8> data);
+    TextEntry() {}
+    TextEntry(std::string& text);
 
-    static TextEntry FromText(std::string text);
+    void Fill(tcb::span<const u8> data);
     std::string ToText(size_t indent_level = 0, bool one_line = false);
     std::vector<TextEntryValue> m_values;
   };
 
+  TextSection() { m_text_entries = {}; }
   TextSection(exio::BinaryReader& reader, size_t table_size);
   std::vector<TextEntry> m_text_entries;
 };

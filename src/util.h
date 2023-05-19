@@ -1,6 +1,7 @@
 #pragma once
 
 #include <exio/types.h>
+#include <msbt/tags.h>
 #include <nonstd/span.h>
 #include <string>
 #include <vector>
@@ -39,22 +40,42 @@ static inline void replace_all(std::string& src, const std::string& from, const 
   }
 }
 
-static std::vector<std::pair<std::string, std::string>> parse_params(std::string src, size_t pos) {
-  std::vector<std::pair<std::string, std::string>> result;
+static tags::TagParams parse_tag_params(std::string& src, size_t pos) {
+  tags::TagParams result;
 
-  while (pos < src.length() || src[pos] != ' ') {
+  while (pos < src.length() - 1) {
     std::pair<std::string, std::string> entry;
 
-    while (src[++pos] != '\'') {
+    while (src[pos + 1] == ' ') {
+      pos++;
+    }
+
+    while (src[++pos] != '=') {
       entry.first += src[pos];
     }
 
-    while (src[++pos] != '\'') {
-      entry.second += src[pos];
-    }
+    if (src[++pos] == '\'') {
+      while (src[++pos] != '\'') {
+        entry.second += src[pos];
+      }
 
-    result.push_back(entry);
+      result.push_back(entry);
+    }
   }
+
+  return result;
+}
+
+static std::pair<std::string, tags::TagParams> parse_tag(std::string& text) {
+  std::pair<std::string, tags::TagParams> result;
+  size_t pos = 0;
+
+  while (text[pos] != ' ') {
+    result.first += text[pos++];
+  }
+
+  result.second = parse_tag_params(text, pos);
+  return result;
 }
 
 }  // namespace oepd::msbt::util

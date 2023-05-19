@@ -18,6 +18,26 @@ TextSection::TextEntryValue::TextEntryValue(std::wstring text) {
   m_text = text;
 }
 
+TextSection::TextEntry::TextEntry(std::string& text) {
+  for (size_t i = 0; i < text.length(); i++) {
+    size_t end = 0;
+
+    if (text[i] == '<' && (end = text.find("/>", i)) > 0) {
+      i++;
+      m_values.push_back({tags::CreateTag(text.substr(i, end - i))});
+      i = ++end;
+    } else {
+      std::string block;
+      while (i < text.length() && text[i + 1] != '<') {
+        block += text[i];
+        i++;
+      }
+
+      m_values.push_back(converter.from_bytes(block));
+    }
+  }
+}
+
 void TextSection::TextEntry::Fill(tcb::span<const u8> data) {
   exio::BinaryReader reader{data, exio::Endianness::Little};
 
@@ -32,7 +52,7 @@ void TextSection::TextEntry::Fill(tcb::span<const u8> data) {
       const auto type_id = *reader.Read<u16>(++i * 2);
       const auto data_len = *reader.Read<u16>(++i * 2);
 
-      auto tag = tags::FillTag(group_id, type_id, data.subspan(++i * 2, data_len));
+      auto tag = tags::CreateTag(group_id, type_id, data.subspan(++i * 2, data_len));
       --i += data_len / sizeof(wchar_t);
       m_values.push_back(TextEntryValue{tag});
     } else if (wchar == 0x0F) {
@@ -48,8 +68,6 @@ void TextSection::TextEntry::Fill(tcb::span<const u8> data) {
     }
   }
 }
-
-TextSection::TextEntry TextSection::TextEntry::FromText(std::string text) {}
 
 std::string TextSection::TextEntry::ToText(size_t indent_level, bool one_line) {
   const auto indentation = std::string(indent_level, ' ');
