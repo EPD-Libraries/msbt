@@ -50,10 +50,10 @@ public:
   struct TextEntryValue {
   public:
     TextEntryValue(tags::Tag* tag);
-    TextEntryValue(std::string text);
+    TextEntryValue(std::wstring text);
 
     tags::Tag* m_tag = nullptr;
-    std::optional<std::string> m_text;
+    std::optional<std::wstring> m_text;
   };
 
   struct TextEntry {

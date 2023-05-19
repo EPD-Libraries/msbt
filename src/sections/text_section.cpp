@@ -1,14 +1,20 @@
+#include <codecvt>
+#include <locale>
+#include <string>
+
 #include "msbt/msbt.h"
 #include "msbt/tags.h"
 #include "util.h"
 
 namespace oepd::msbt {
 
+static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> converter;
+
 TextSection::TextEntryValue::TextEntryValue(tags::Tag* tag) {
   m_tag = tag;
 }
 
-TextSection::TextEntryValue::TextEntryValue(std::string text) {
+TextSection::TextEntryValue::TextEntryValue(std::wstring text) {
   m_text = text;
 }
 
@@ -35,7 +41,7 @@ void TextSection::TextEntry::Fill(tcb::span<const u8> data) {
       // ignore null
     } else {
       if (m_values.empty() || !m_values.back().m_text) {
-        m_values.push_back(TextEntryValue{std::string{}});
+        m_values.push_back(TextEntryValue{std::wstring{}});
       }
 
       *m_values.back().m_text += wchar;
@@ -52,8 +58,9 @@ std::string TextSection::TextEntry::ToText(size_t indent_level, bool one_line) {
     if (value.m_tag != nullptr) {
       result += value.m_tag->ToText();
     } else {
-      util::replace_all(*value.m_text, "\n", "\n" + indentation);
-      result += *value.m_text;
+      std::string utf8 = converter.to_bytes(*value.m_text);
+      util::replace_all(utf8, "\n", "\n" + indentation);
+      result += utf8;
     }
   }
 
