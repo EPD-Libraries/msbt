@@ -11,6 +11,6 @@ int main(int argc, char** argv) {
   const auto file = file::util::ReadAllBytes(argv[1]);
   auto msbt = oepd::msbt::FromBinary(file);
 
-  std::ofstream stream(argv[2], std::ios::binary);
+  std::ofstream stream(std::string{argv[1]} + ".yml", std::ios::binary);
   stream << msbt.ToText();
 }
