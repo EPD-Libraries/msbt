@@ -22,11 +22,13 @@ add_library(msbt STATIC
 
     ./src/tags.cpp
     ./src/include/msbt/tags.h
-
     ./src/include/msbt/tags/animation_tag.h
+
+    ./src/util.h
 )
 
 target_include_directories(msbt PUBLIC ./src/include)
+target_include_directories(msbt PRIVATE ./src)
 
 if(MSVC)
     target_compile_options(msbt PRIVATE /W4 /wd4244 /wd4127 /Zc:__cplusplus)

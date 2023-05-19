@@ -1,5 +1,6 @@
 #include "msbt/msbt.h"
 #include "msbt/tags.h"
+#include "util.h"
 
 namespace oepd::msbt {
 
@@ -45,11 +46,13 @@ void TextSection::TextEntry::Fill(tcb::span<const u8> data) {
 TextSection::TextEntry TextSection::TextEntry::FromText(std::string text) {}
 
 std::string TextSection::TextEntry::ToText(size_t indent_level, bool one_line) {
-  std::string result;
+  const auto indentation = std::string(indent_level, ' ');
+  std::string result = indentation;
   for (auto value : m_values) {
     if (value.m_tag != nullptr) {
       result += value.m_tag->ToText();
     } else {
+      util::replace_all(*value.m_text, "\n", "\n" + indentation);
       result += *value.m_text;
     }
   }
