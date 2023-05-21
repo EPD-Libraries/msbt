@@ -6,7 +6,7 @@
 #include <nonstd/span.h>
 #include <vector>
 
-namespace file::util {
+namespace io::file {
 
 std::vector<u8> read_all_bytes(std::string& file_path) {
   std::vector<u8> file;
@@ -31,4 +31,4 @@ std::optional<std::string> get_extension(std::string& path) {
   return path.substr(get_extension_index(path), path.length());
 }
 
-}  // namespace file::util
+}  // namespace io::file
