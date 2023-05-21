@@ -9,13 +9,14 @@ int main(int argc, char** argv) {
 
   if (ext == ".yaml" || ext == ".yml") {
     const auto file = file::util::read_all_bytes(path);
-    auto msbt = oepd::msbt::FromText(reinterpret_cast<const char*>(file.data()));
+    auto msbt = oepd::msbt::FromText(std::string{reinterpret_cast<const char*>(file.data()), file.size()});
+    const auto data = msbt.ToBinary();
 
     size_t idx = file::util::get_extension_index(path);
     std::string outfile = path.substr(0, idx) + ".msbt";
 
     std::ofstream stream(outfile, std::ios::binary);
-    stream << msbt.ToBinary().data();
+    stream.write(reinterpret_cast<const char*>(data.data()), data.size());
   } else if (ext == ".msbt") {
     const auto file = file::util::read_all_bytes(path);
     auto msbt = oepd::msbt::FromBinary(file);
