@@ -16,7 +16,7 @@ public:
   virtual void Fill(u16 group_id, u16 type_id, tcb::span<const u8> data) = 0;
 
   /// Fill the tag data from pseudo-HTML text data
-  virtual void Fill(std::string group_name, TagParams params) = 0;
+  virtual void Fill(std::string_view group_name, TagParams params) = 0;
 
   virtual std::string ToText() = 0;
   virtual void ToBinary(exio::BinaryWriter& writer) = 0;
@@ -26,12 +26,12 @@ public:
 Tag* CreateTag(u16 group_id, u16 type_id, tcb::span<const u8> data);
 
 /// Finds and constructs a tag from the string representation
-Tag* CreateTag(std::string text);
+Tag* CreateTag(std::string_view text);
 
 class UnknownTag : public Tag {
 public:
   void Fill(u16 group_id, u16 type_id, tcb::span<const u8> data) override;
-  void Fill(std::string group_name, TagParams params) override;
+  void Fill(std::string_view group_name, TagParams params) override;
 
   std::string ToText() override;
   void ToBinary(exio::BinaryWriter& writer) override;

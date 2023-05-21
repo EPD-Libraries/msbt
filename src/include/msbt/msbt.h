@@ -68,7 +68,7 @@ public:
 
   struct TextEntry {
     TextEntry() {}
-    TextEntry(std::string& text);
+    TextEntry(std::string_view text);
 
     void Fill(tcb::span<const u8> data);
     std::string ToText(size_t indent_level = 0, bool one_line = false);
@@ -85,7 +85,7 @@ public:
 class MSBT {
 public:
   MSBT(tcb::span<const u8> data);
-  MSBT(std::string text);
+  MSBT(std::string_view text);
 
   std::vector<u8> ToBinary();
   std::string ToText();
@@ -99,6 +99,6 @@ private:
 };
 
 MSBT FromBinary(tcb::span<const u8> data);
-MSBT FromText(std::string text);
+MSBT FromText(std::string_view text);
 
 }  // namespace oepd::msbt

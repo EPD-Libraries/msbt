@@ -1,3 +1,5 @@
+#include <charconv>
+
 #include "msbt/tags.h"
 #include "util.h"
 
@@ -15,7 +17,7 @@ Tag* CreateTag(u16 group_id, u16 type_id, tcb::span<const u8> data) {
   return tag;
 }
 
-Tag* CreateTag(std::string text) {
+Tag* CreateTag(std::string_view text) {
   Tag* tag;
   const auto tag_info = util::parse_tag(text);
 
@@ -35,8 +37,8 @@ void UnknownTag::Fill(u16 group_id, u16 type_id, tcb::span<const u8> data) {
   m_data = data;
 }
 
-void UnknownTag::Fill(std::string group_name, TagParams params) {
-  m_group = stoi(group_name);
+void UnknownTag::Fill(std::string_view group_name, TagParams params) {
+  std::from_chars(group_name.data(), group_name.data() + group_name.size(), m_group);
   for (const auto entry : params) {
     if (entry.first == "Type") {
       m_type = stoi(entry.second);

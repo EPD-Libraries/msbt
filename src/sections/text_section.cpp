@@ -18,7 +18,7 @@ TextSection::TextEntryValue::TextEntryValue(std::wstring text) {
   m_text = text;
 }
 
-TextSection::TextEntry::TextEntry(std::string& text) {
+TextSection::TextEntry::TextEntry(std::string_view text) {
   for (size_t i = 0; i < text.length(); i++) {
     size_t end = 0;
 

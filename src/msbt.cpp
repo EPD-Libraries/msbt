@@ -52,7 +52,7 @@ MSBT::MSBT(tcb::span<const u8> data) : m_reader{data, exio::Endianness::Little} 
   }
 }
 
-MSBT::MSBT(std::string text) {
+MSBT::MSBT(std::string_view text) {
   m_label_section = LabelSection{};
   m_text_section = TextSection{};
 
@@ -61,7 +61,7 @@ MSBT::MSBT(std::string text) {
   size_t i = 0;
 
   while (i < text.length()) {
-    m_label_section->m_label_entries.push_back({index, text.substr(i, pos - i)});
+    m_label_section->m_label_entries.push_back({index, std::string{text.substr(i, pos - i)}});
 
     std::string body;
     i = text.find("\n  ", pos) + 2;
@@ -134,7 +134,7 @@ MSBT FromBinary(tcb::span<const u8> data) {
   return MSBT{data};
 }
 
-MSBT FromText(std::string text) {
+MSBT FromText(std::string_view text) {
   return MSBT{text};
 }
 

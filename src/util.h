@@ -21,12 +21,12 @@ static std::string to_hex(tcb::span<const u8> data) {
   return s;
 }
 
-static std::vector<u8> from_hex(std::string hex) {
+static std::vector<u8> from_hex(std::string_view hex) {
   std::vector<u8> data;
 
   for (size_t i = 0; i < hex.length(); i += 2) {
-    std::string byte = hex.substr(i, 2);
-    data.push_back(strtol(byte.c_str(), NULL, 16));
+    std::string_view byte = hex.substr(i, 2);
+    data.push_back(strtol(byte.data(), NULL, 16));
   }
 
   return data;
@@ -40,7 +40,7 @@ static inline void replace_all(std::string& src, const std::string& from, const 
   }
 }
 
-static tags::TagParams parse_tag_params(std::string& src, size_t pos) {
+static tags::TagParams parse_tag_params(std::string_view src, size_t pos) {
   tags::TagParams result;
 
   while (pos < src.length() - 1) {
@@ -66,7 +66,7 @@ static tags::TagParams parse_tag_params(std::string& src, size_t pos) {
   return result;
 }
 
-static std::pair<std::string, tags::TagParams> parse_tag(std::string& text) {
+static std::pair<std::string, tags::TagParams> parse_tag(std::string_view text) {
   std::pair<std::string, tags::TagParams> result;
   size_t pos = 0;
 
