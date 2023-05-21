@@ -47,6 +47,8 @@ if(BUILD_TESTING)
     add_subdirectory(tests)
 endif()
 
+add_subdirectory(msbt_to_yaml)
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
