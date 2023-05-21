@@ -33,6 +33,10 @@ TextSection::TextEntry::TextEntry(std::string& text) {
         i++;
       }
 
+      if (i < text.length()) {
+        block += text[i];
+      }
+
       m_values.push_back(converter.from_bytes(block));
     }
   }
@@ -93,7 +97,7 @@ TextSection::TextSection(exio::BinaryReader& reader, size_t table_size) {
   for (size_t i = 0; i < table.offset_count; i++) {
     const auto offset_ptr = text_table_offset + sizeof(SectionTable) + sizeof(u32) * i;
     const auto offset = *reader.Read<u32>(offset_ptr);
-    auto next_offset = *reader.Read<u32>(offset_ptr + sizeof(u32));
+    const auto next_offset = *reader.Read<u32>(offset_ptr + sizeof(u32));
 
     m_text_entries[i].Fill(
         reader.span().subspan(text_table_offset + offset, (i == table.offset_count - 1 ? table_size : next_offset) - offset));
@@ -101,5 +105,53 @@ TextSection::TextSection(exio::BinaryReader& reader, size_t table_size) {
 
   reader.Seek(table_size);
 };
+
+void TextSection::Write(exio::BinaryWriter& writer) {
+  writer.Seek(writer.Tell() + sizeof(SectionHeader));
+  size_t block_offset = writer.Tell();
+
+  SectionTable table;
+  table.offset_count = m_text_entries.size();
+  writer.Write(table);
+
+  size_t entry_meta_offset = writer.Tell();
+  std::vector<u32> offsets;
+
+  writer.Seek(writer.Tell() + m_text_entries.size() * 4);
+  for (const auto entry : m_text_entries) {
+    offsets.push_back(writer.Tell() - block_offset);
+    for (const auto value : entry.m_values) {
+      if (value.m_tag) {
+        writer.Write<u16>(0x0E);
+        value.m_tag->ToBinary(writer);
+      } else {
+        // This could probably be better,
+        // I've had enough of wstring though
+        for (const auto wchar : *value.m_text) {
+          writer.Write(wchar);
+        }
+      }
+    }
+
+    writer.Write<u16>(0x00);
+  }
+
+  const size_t table_size = writer.Tell() - block_offset;
+
+  writer.Seek(entry_meta_offset);
+  for (const auto offset : offsets) {
+    writer.Write(offset);
+  }
+
+  SectionHeader header;
+  header.magic = TextSectionMagic;
+  header.table_size = table_size;
+  header._padding = 0;
+
+  writer.Seek(block_offset - sizeof(SectionHeader));
+  writer.Write(header);
+
+  writer.Seek(block_offset + table_size);
+}
 
 }  // namespace oepd::msbt

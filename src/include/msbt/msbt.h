@@ -11,6 +11,11 @@
 
 namespace oepd::msbt {
 
+constexpr auto MsbtMagic = exio::util::MakeMagic("MsgStdBn");
+constexpr auto LabelSectionMagic = exio::util::MakeMagic("LBL1");
+constexpr auto AttributeSectionMagic = exio::util::MakeMagic("ATR1");
+constexpr auto TextSectionMagic = exio::util::MakeMagic("TXT2");
+
 /// Common Section Header
 struct SectionHeader {
   std::array<char, 4> magic;
@@ -36,13 +41,17 @@ struct LabelSection {
 public:
   LabelSection() {}
   LabelSection(exio::BinaryReader& reader);
-  std::vector<std::pair<size_t, std::string>> m_label_entries{};
+
+  void Write(exio::BinaryWriter& writer, const size_t num_groups = 1);
+
+  std::vector<std::pair<const size_t, std::string>> m_label_entries{};
 };
 
 /// MSBT Attribute Section (ATR1)
 struct AttributeSection {
 public:
   AttributeSection(exio::BinaryReader& reader);
+  void Write(exio::BinaryWriter& writer);
 };
 
 /// MSBT Text Section (TXT2)
@@ -68,6 +77,8 @@ public:
 
   TextSection() { m_text_entries = {}; }
   TextSection(exio::BinaryReader& reader, size_t table_size);
+
+  void Write(exio::BinaryWriter& writer);
   std::vector<TextEntry> m_text_entries;
 };
 
