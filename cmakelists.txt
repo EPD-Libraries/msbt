@@ -22,7 +22,7 @@ add_library(msbt STATIC
 
     ./src/tags.cpp
     ./src/include/msbt/tags.h
-    ./src/include/msbt/tags/animation_tag.h
+    ./src/tags/unknown_tag.cpp
 
     ./src/util.h
 )
