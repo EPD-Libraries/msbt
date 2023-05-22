@@ -1,5 +1,6 @@
 #pragma once
 
+#include <charconv>
 #include <exio/types.h>
 #include <msbt/tags.h>
 #include <nonstd/span.h>
@@ -21,12 +22,13 @@ static std::string to_hex(tcb::span<const u8> data) {
   return s;
 }
 
-static std::vector<u8> from_hex(std::string_view hex) {
-  std::vector<u8> data;
-
+static std::vector<u8>* from_hex(std::string_view hex) {
+  auto data = new std::vector<u8>;
   for (size_t i = 0; i < hex.length(); i += 2) {
-    std::string_view byte = hex.substr(i, 2);
-    data.push_back(strtol(byte.data(), NULL, 16));
+    u8 byte;
+    std::string_view byte_char = hex.substr(i, 2);
+    std::from_chars(byte_char.data(), byte_char.data() + byte_char.size(), byte, 16);
+    data->push_back(byte);
   }
 
   return data;
