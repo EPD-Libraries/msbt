@@ -3,7 +3,7 @@ add_executable(msbt_to_yaml
     ./src/main.cpp
 )
 
-if(WIN32)
+if(WIN32 AND NOT MSVC)
     set(CMAKE_CXX_STANDARD_LIBRARIES "-static -static-libgcc -static-libstdc++")
 endif()
 
