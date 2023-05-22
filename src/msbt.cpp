@@ -4,6 +4,8 @@
 
 #include "msbt/msbt.h"
 
+#pragma pack(push, 1)
+
 namespace oepd::msbt {
 
 struct Header {
@@ -15,7 +17,8 @@ struct Header {
   u16 _padding_2;
   u32 file_size;
   std::array<u8, 10> _padding_3;
-} __attribute__((packed));
+  EXIO_DEFINE_FIELDS(Header, magic, bom, _padding_1, version, num_sections, _padding_2, file_size, _padding_3);
+};
 static_assert(sizeof(Header) == 0x20);
 
 MSBT::MSBT(tcb::span<const u8> data) : m_reader{data, exio::Endianness::Little} {
