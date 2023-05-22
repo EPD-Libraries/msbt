@@ -1,5 +1,6 @@
 #pragma once
 
+#include <charconv>
 #include <exio/binary_writer.h>
 #include <exio/error.h>
 #include <iostream>
@@ -40,8 +41,10 @@ public:
   u16 m_type;
   tcb::span<const u8> m_data;
 
+  ~UnknownTag() { delete m_private_data; }
+
 private:
-  std::optional<std::vector<u8>> m_private_data;
+  std::vector<u8>* m_private_data = nullptr;
 };
 
 }  // namespace oepd::msbt::tags
