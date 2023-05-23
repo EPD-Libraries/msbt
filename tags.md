@@ -46,7 +46,10 @@
 
 ### Group 0, Type 2
 
-```
+> Text Size
+
+```cpp
+u16 m_text_size
 ```
 
 ### Group 0, Type 3
