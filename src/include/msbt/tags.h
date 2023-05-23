@@ -47,4 +47,15 @@ private:
   std::vector<u8>* m_private_data = nullptr;
 };
 
+class FontSizeTag : public Tag {
+public:
+  void Fill(u16 group_id, u16 type_id, tcb::span<const u8> data) override;
+  void Fill(std::string_view group_name, TagParams params) override;
+
+  std::string ToText() override;
+  void ToBinary(exio::BinaryWriter& writer) override;
+
+  u16 m_font_size;
+};
+
 }  // namespace oepd::msbt::tags
