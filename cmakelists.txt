@@ -23,6 +23,7 @@ add_library(msbt STATIC
     ./src/tags.cpp
     ./src/include/msbt/tags.h
     ./src/tags/font_size_tag.cpp
+    ./src/tags/font_tag.cpp
     ./src/tags/unknown_tag.cpp
 
     ./src/util.h
