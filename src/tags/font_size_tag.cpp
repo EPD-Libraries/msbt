@@ -21,7 +21,7 @@ std::string FontSizeTag::ToText() {
 
 void FontSizeTag::ToBinary(exio::BinaryWriter& writer) {
   writer.Write<u16>(0);
-  writer.Write<u16>(1);
+  writer.Write<u16>(2);
   writer.Write<u16>(2);
   writer.Write(m_font_size);
 }
