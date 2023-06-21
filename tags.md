@@ -46,7 +46,7 @@
 
 ### Group 0, Type 2
 
-> Text Size
+> Font Size
 
 ```cpp
 u16 m_text_size
