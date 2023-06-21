@@ -127,7 +127,7 @@ std::vector<u8> MSBT::ToBinary() {
 std::string MSBT::ToText() {
   std::string result;
   for (const auto entry : m_label_section->m_label_entries) {
-    result += entry.second + ": |\n" + m_text_section->m_text_entries[entry.first].ToText(2) + '\n';
+    result += entry.second + ": |-\n" + m_text_section->m_text_entries[entry.first].ToText(2) + '\n';
   }
 
   return result;
