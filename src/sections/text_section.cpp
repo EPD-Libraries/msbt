@@ -1,4 +1,3 @@
-#include <codecvt>
 #include <locale>
 #include <string>
 
@@ -8,7 +7,13 @@
 
 namespace oepd::msbt {
 
-static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> converter;
+struct codecvt : std::codecvt<wchar_t, char, std::mbstate_t>
+{
+    ~codecvt()
+    { }
+};
+
+static std::wstring_convert<codecvt> converter;
 
 TextSection::TextEntryValue::TextEntryValue(tags::Tag* tag) {
   m_tag = tag;
