@@ -12,6 +12,7 @@ set(ABSL_WAITER_MODE 0)
 include(CTest)
 enable_testing()
 
+file(GLOB TAG_FILES ./src/tags/*.*)
 add_library(msbt STATIC
     ./src/msbt.cpp
     ./src/include/msbt/msbt.h
@@ -22,9 +23,7 @@ add_library(msbt STATIC
 
     ./src/tags.cpp
     ./src/include/msbt/tags.h
-    ./src/tags/font_size_tag.cpp
-    ./src/tags/font_tag.cpp
-    ./src/tags/unknown_tag.cpp
+    ${TAG_FILES}
 
     ./src/util.h
 )
