@@ -7,14 +7,6 @@
 
 namespace oepd::msbt {
 
-struct codecvt : std::codecvt<wchar_t, char, std::mbstate_t>
-{
-    ~codecvt()
-    { }
-};
-
-static std::wstring_convert<codecvt> converter;
-
 TextSection::TextEntryValue::TextEntryValue(tags::Tag* tag) {
   m_tag = tag;
 }
