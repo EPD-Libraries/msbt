@@ -14,7 +14,7 @@ std::vector<u8> read_all_bytes(std::string& file_path) {
   file.resize(stream.tellg());
   stream.seekg(0, std::ios::beg);
   stream.read(reinterpret_cast<char*>(file.data()), file.size());
-  return std::move(file);
+  return file;
 }
 
 size_t get_extension_index(std::string& path) {
