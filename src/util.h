@@ -1,11 +1,26 @@
 #pragma once
 
+#include <locale>
+#include <string>
 #include <charconv>
 #include <exio/types.h>
 #include <msbt/tags.h>
 #include <nonstd/span.h>
 #include <string>
 #include <vector>
+
+#if _WIN32
+#include <codecvt>
+static std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> converter;
+#else
+struct codecvt : std::codecvt<wchar_t, char, std::mbstate_t>
+{
+    ~codecvt()
+    { }
+};
+
+static std::wstring_convert<codecvt> converter;
+#endif
 
 namespace oepd::msbt::util {
 
@@ -78,6 +93,14 @@ static std::pair<std::string, tags::TagParams> parse_tag(std::string_view text) 
 
   result.second = parse_tag_params(text, pos);
   return result;
+}
+
+static std::string convert_to_utf8(std::wstring& src) {
+  return converter.to_bytes(src);
+}
+
+static std::wstring convert_to_utf16(std::string src) {
+  return converter.from_bytes(src);
 }
 
 }  // namespace oepd::msbt::util
