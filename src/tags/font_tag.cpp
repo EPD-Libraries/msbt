@@ -15,7 +15,7 @@ void FontTag::Fill(u16 group_id, u16 type_id, tcb::span<const u8> data) {
 }
 
 void FontTag::Fill(std::string_view group_name, TagParams params) {
-  for (const auto entry : params) {
+  for (const auto& entry : params) {
     if (entry.first == "Font") {
       m_font = font_to_enum_map[entry.second];
     }

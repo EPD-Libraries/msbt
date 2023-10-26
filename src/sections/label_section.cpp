@@ -50,7 +50,7 @@ void LabelSection::Write(exio::BinaryWriter& writer, const size_t num_groups) {
 
   size_t label_meta_offset = writer.Tell();
   writer.Seek(writer.Tell() + sizeof(LabelEntry) * hash_table.size());
-  for (const auto group : hash_table) {
+  for (const auto& group : hash_table) {
     hash_table[group.first].first = writer.Tell() - block_offset;
     for (const auto label_index : group.second.second) {
       const auto label = m_label_entries[label_index];
