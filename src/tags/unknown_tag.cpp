@@ -11,7 +11,7 @@ void UnknownTag::Fill(u16 group_id, u16 type_id, tcb::span<const u8> data) {
 
 void UnknownTag::Fill(std::string_view group_name, TagParams params) {
   std::from_chars(group_name.data(), group_name.data() + group_name.size(), m_group);
-  for (const auto entry : params) {
+  for (const auto& entry : params) {
     if (entry.first == "Type") {
       m_type = stoi(entry.second);
     } else if (entry.first == "Data") {
