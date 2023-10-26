@@ -63,6 +63,10 @@ MSBT::MSBT(std::string_view text) {
   size_t pos = text.find(':');
   size_t i = 0;
 
+  if (text.back() != '\n') {
+    text = std::string(text) + '\n';
+  }
+
   while (i < text.length()) {
     m_label_section->m_label_entries.push_back({index, std::string{text.substr(i, pos - i)}});
 
@@ -137,7 +141,7 @@ MSBT FromBinary(tcb::span<const u8> data) {
   return MSBT{data};
 }
 
-MSBT FromText(std::string_view text) {
+MSBT FromText(std::string_view text) {  
   return MSBT{text};
 }
 
