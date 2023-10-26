@@ -12,7 +12,7 @@ set(ABSL_WAITER_MODE 0)
 include(CTest)
 enable_testing()
 
-file(GLOB TAG_FILES ./src/tags/*.*)
+file(GLOB TAG_FILES ./src/tags/*.cpp)
 add_library(msbt STATIC
     ./src/msbt.cpp
     ./src/include/msbt/msbt.h
