@@ -16,6 +16,9 @@ Tag* CreateTag(u16 group_id, u16 type_id, tcb::span<const u8> data) {
     case TagCase(0, 2):
       tag = new FontSizeTag;
       break;
+    case TagCase(0, 3):
+      tag = new FontColorTag;
+      break;
     case TagCase(2, 1):
       tag = new StringFlagTag;
       break;
@@ -38,10 +41,12 @@ Tag* CreateTag(std::string_view text) {
   Tag* tag;
   const auto tag_info = util::parse_tag(text);
 
-  if (tag_info.first == "FontSize") {
-    tag = new FontSizeTag;
-  } else if (tag_info.first == "Font") {
+  if (tag_info.first == "Font") {
     tag = new FontTag;
+  } else if (tag_info.first == "FontSize") {
+    tag = new FontSizeTag;
+  } else if (tag_info.first == "FontColor") {
+    tag = new FontColorTag;
   } else if (tag_info.first == "IntFlag") {
     tag = new IntegerFlagTag;
   } else if (tag_info.first == "StringFlag") {
