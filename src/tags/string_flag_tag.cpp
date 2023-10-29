@@ -38,10 +38,10 @@ void StringFlagTag::ToBinary(exio::BinaryWriter& writer) {
   writer.Write<u16>(2);
   writer.Write<u16>(1);
   writer.Write<u16>(
-    sizeof(u16) + m_flag_name.size() +
+    sizeof(u16) + m_flag_name.size() * 2 +
     sizeof(u16) + sizeof(u16));
 
-  writer.Write<u16>(m_flag_name.size());
+  writer.Write<u16>(m_flag_name.size() * 2);
   for (const wchar_t wchar : m_flag_name) {
     writer.Write(wchar);
   }
