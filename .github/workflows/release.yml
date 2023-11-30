@@ -21,16 +21,13 @@ jobs:
           - name: Windows
             os: windows-latest
             ext: .exe
-            c_compiler: gcc-13
-            cpp_compiler: g++-13
+            c_compiler: cl
+            cpp_compiler: cl
 
     steps:
       - uses: actions/checkout@master
         with:
           submodules: recursive
-
-      - name: Install ninja-build tools
-        uses: seanmiddleditch/gha-setup-ninja@v4
 
       - name: Configure
         shell: bash
@@ -42,8 +39,7 @@ jobs:
             -DCMAKE_BUILD_TYPE:STRING=Release \
             -DCMAKE_CXX_COMPILER=${{ matrix.config.cpp_compiler }} \
             -DCMAKE_C_COMPILER=${{ matrix.config.c_compiler }} \
-            -B ./build/ \
-            -G "MinGW Makefiles"
+            -B ./build/
 
       - name: Build
         shell: bash
