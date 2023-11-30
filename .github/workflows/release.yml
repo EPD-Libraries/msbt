@@ -16,39 +16,30 @@ jobs:
           - name: Linux
             os: ubuntu-latest
             ext: ""
-            runtime: linux-x64
-            vars: CXX="g++"
-            setup: |
-              sudo apt-get update
-              sudo apt-get install ninja-build cmake
-              ninja --version
-              cmake --version
-              gcc --version
           - name: Windows
             os: windows-latest
             ext: .exe
-            runtime: win-x64
-            setup: |
-              choco install ninja cmake
-              ninja --version
-              cmake --version
 
     steps:
       - uses: actions/checkout@master
         with:
           submodules: recursive
 
-      - name: Install Dependencies
-        run: ${{ matrix.config.setup }}
+      - name: Install GCC
+        uses: egor-tensin/setup-gcc@v1.3
+
+      - name: Install ninja-build tools
+        uses: seanmiddleditch/gha-setup-ninja@v4
 
       - name: Configure
         shell: bash
         run: |
           mkdir ./build
-          ${{ matrix.config.vars }} \
           cmake --no-warn-unused-cli \
             -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE \
             -DCMAKE_BUILD_TYPE:STRING=Release \
+            -DCMAKE_C_COMPILER=gcc \
+            -DCMAKE_CPP_COMPILER=g++ \
             -B ./build/ \
             -G "Ninja"
 
