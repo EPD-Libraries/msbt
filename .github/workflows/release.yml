@@ -14,9 +14,10 @@ jobs:
       matrix:
         config:
           - name: Linux
-            os: ubuntu-20.04
+            os: ubuntu-latest
             ext: ""
             runtime: linux-x64
+            vars: CXX="g++"
             setup: |
               sudo apt-get update
               sudo apt-get install ninja-build cmake
@@ -48,8 +49,6 @@ jobs:
           cmake --no-warn-unused-cli \
             -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE \
             -DCMAKE_BUILD_TYPE:STRING=Release \
-            -DCMAKE_CXX_COMPILER=g++-13
-            -DCMAKE_C_COMPILER=g++-13
             -B ./build/ \
             -G "Ninja"
 
