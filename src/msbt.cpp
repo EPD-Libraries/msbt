@@ -36,9 +36,9 @@ MSBT::MSBT(tcb::span<const u8> data) : m_reader{data, exio::Endianness::Little} 
     const auto magic = table_header.magic;
     if (magic == LabelSectionMagic) {
       m_label_section = LabelSection{m_reader};
-    } /* else if (magic == AttributeSectionMagic) {
+    } else if (magic == AttributeSectionMagic) {
       m_attribute_section = AttributeSection{m_reader};
-    } */
+    }
     else if (magic == TextSectionMagic) {
       m_text_section = TextSection{m_reader, table_header.table_size};
     } else {
@@ -55,17 +55,19 @@ MSBT::MSBT(tcb::span<const u8> data) : m_reader{data, exio::Endianness::Little} 
   }
 }
 
-MSBT::MSBT(std::string_view text) {
+MSBT::MSBT(std::string_view src) {
   m_label_section = LabelSection{};
   m_text_section = TextSection{};
 
-  size_t index = 0;
-  size_t pos = text.find(':');
-  size_t i = 0;
+  std::string text = std::string(src);
 
   if (text.back() != '\n') {
     text = std::string(text) + '\n';
   }
+
+  size_t index = 0;
+  size_t pos = src.find(':');
+  size_t i = 0;
 
   while (i < text.length()) {
     m_label_section->m_label_entries.push_back({index, std::string{text.substr(i, pos - i)}});
