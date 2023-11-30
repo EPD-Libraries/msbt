@@ -8,30 +8,20 @@ jobs:
   build:
     permissions: write-all
     name: Build ${{ matrix.config.name }}
-    runs-on: ${{ matrix.config.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        config:
-          - name: Linux
-            os: ubuntu-latest
-            ext: ""
-            runtime: linux-x64
-            vars: CXX="g++"
-            setup: |
-              sudo apt-get update
-              sudo apt-get install ninja-build cmake
-              ninja --version
-              cmake --version
-              gcc --version
-          - name: Windows
-            os: windows-latest
-            ext: .exe
-            runtime: win-x64
-            setup: |
-              choco install ninja cmake
-              ninja --version
-              cmake --version
+        - name: Linux
+          os: ubuntu-latest
+          ext: ~
+          c_compiler: gcc
+          cpp_compiler: g++
+        - name: Windows
+          os: windows-latest
+          ext: .exe
+          c_compiler: cl
+          cpp_compiler: cl
 
     steps:
       - uses: actions/checkout@master
@@ -45,12 +35,12 @@ jobs:
         shell: bash
         run: |
           mkdir ./build
-          ${{ matrix.config.vars }} \
-          cmake --no-warn-unused-cli \
+          cmake \
             -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE \
             -DCMAKE_BUILD_TYPE:STRING=Release \
-            -B ./build/ \
-            -G "Ninja"
+            -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }} \
+            -DCMAKE_C_COMPILER=${{ matrix.c_compiler }} \
+            -B ./build/
 
       - name: Build
         shell: bash
