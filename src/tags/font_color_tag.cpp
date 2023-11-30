@@ -1,4 +1,5 @@
 #include <unordered_map>
+#include <format>
 #include "msbt/tags.h"
 #include "util.h"
 
@@ -18,14 +19,20 @@ void FontColorTag::Fill(u16 group_id, u16 type_id, tcb::span<const u8> data) {
 
 void FontColorTag::Fill(std::string_view group_name, TagParams params) {
   for (const auto& entry : params) {
-    if (entry.first == "Colour") {
+    if (entry.first == "Color") {
       m_font_color = color_to_enum_map[entry.second];
+    } else if (entry.first == "UnknownColor") {
+      m_font_color = *reinterpret_cast<const FontColorTag::FontColor*>(stoi(entry.second));
     }
   }
 }
 
 std::string FontColorTag::ToText() {
-  return "<FontColor Colour='" + color_to_str_map[m_font_color] + "'/>";
+  if (color_to_str_map.find(m_font_color) != color_to_str_map.end()) {
+    return "<FontColor Color='" + color_to_str_map[m_font_color] + "'/>";
+  } else {
+    return "<FontColor UnknownColor='" + std::format("{:x}", static_cast<u16>(m_font_color)) + "'/>";
+  }
 }
 
 void FontColorTag::ToBinary(exio::BinaryWriter& writer) {
