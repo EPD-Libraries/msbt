@@ -78,7 +78,7 @@ public:
   std::string ToText() override;
   void ToBinary(exio::BinaryWriter& writer) override;
 
-  enum class FontColor : u16 { White = 0xFF, Red = 0x00 };
+  enum class FontColor : u16 { White = 0xFFFF, Red = 0x0000 };
   FontColor m_font_color;
 };
 
