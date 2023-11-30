@@ -16,9 +16,13 @@ jobs:
           - name: Linux
             os: ubuntu-latest
             ext: ~
+            c_compiler: gcc-13
+            cpp_compiler: g++-13
           - name: Windows
             os: windows-latest
             ext: .exe
+            c_compiler: cl
+            cpp_compiler: cl
 
     steps:
       - uses: actions/checkout@master
@@ -36,8 +40,8 @@ jobs:
           cmake \
             -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE \
             -DCMAKE_BUILD_TYPE:STRING=Release \
-            -DCMAKE_CXX_COMPILER=g++-13 \
-            -DCMAKE_C_COMPILER=gcc-13 \
+            -DCMAKE_CXX_COMPILER=${{ matric.config.cpp_compiler }} \
+            -DCMAKE_C_COMPILER=${{ matric.config.c_compiler }} \
             -B ./build/ \
             -G "Ninja"
 
