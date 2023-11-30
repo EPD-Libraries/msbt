@@ -1,5 +1,4 @@
 #include <unordered_map>
-#include <format>
 #include "msbt/tags.h"
 #include "util.h"
 
@@ -31,7 +30,7 @@ std::string FontColorTag::ToText() {
   if (color_to_str_map.find(m_font_color) != color_to_str_map.end()) {
     return "<FontColor Color='" + color_to_str_map[m_font_color] + "'/>";
   } else {
-    return "<FontColor UnknownColor='" + std::format("{:x}", static_cast<u16>(m_font_color)) + "'/>";
+    return "<FontColor UnknownColor='" + std::to_string(static_cast<u16>(m_font_color)) + "'/>";
   }
 }
 

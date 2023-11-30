@@ -14,26 +14,16 @@ jobs:
       matrix:
         config:
           - name: Linux
-            os: ubuntu-latest
+            os: ubuntu-23
             ext: ""
-            compiler: egor-tensin/setup-gcc@v1.3
           - name: Windows
             os: windows-latest
             ext: .exe
-            compiler: egor-tensin/setup-mingw
 
     steps:
       - uses: actions/checkout@master
         with:
           submodules: recursive
-
-      - name: Install GCC (Linux)
-        if: ${{ matrix.config.os == 'ubuntu-latest' }}
-        uses: egor-tensin/setup-gcc@v1.3
-
-      - name: Install MinGW (Windows)
-        if: ${{ matrix.config.os == 'windows-latest' }}
-        uses: egor-tensin/setup-mingw@v2.2.0
 
       - name: Install ninja-build tools
         uses: seanmiddleditch/gha-setup-ninja@v4
