@@ -21,8 +21,8 @@ jobs:
           - name: Windows
             os: windows-latest
             ext: .exe
-            c_compiler: cl
-            cpp_compiler: cl
+            c_compiler: gcc-13
+            cpp_compiler: g++-13
 
     steps:
       - uses: actions/checkout@master
@@ -43,7 +43,7 @@ jobs:
             -DCMAKE_CXX_COMPILER=${{ matrix.config.cpp_compiler }} \
             -DCMAKE_C_COMPILER=${{ matrix.config.c_compiler }} \
             -B ./build/ \
-            -G "Ninja"
+            -G "MinGW Makefiles"
 
       - name: Build
         shell: bash
