@@ -33,7 +33,7 @@ jobs:
 
       - name: Install MinGW (Windows)
         if: ${{ matrix.config.os == 'windows-latest' }}
-        uses: egor-tensin/setup-mingw@v2.2
+        uses: egor-tensin/setup-mingw@v2.2.0
 
       - name: Install ninja-build tools
         uses: seanmiddleditch/gha-setup-ninja@v4
