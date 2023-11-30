@@ -4,7 +4,7 @@
 
 namespace oepd::msbt::tags {
   
-#define TagCase(a, b) a - (b * b)
+#define TagCase(a, b) (a + 1) * (b + 1)
 
 Tag* CreateTag(u16 group_id, u16 type_id, tcb::span<const u8> data) {
   Tag* tag;
