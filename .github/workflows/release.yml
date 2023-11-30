@@ -14,32 +14,44 @@ jobs:
       matrix:
         config:
           - name: Linux
-            os: ubuntu-latest
-            ext: ~
-            c_compiler: gcc-13
-            cpp_compiler: g++-13
+            os: ubuntu-20.04
+            ext: ""
+            runtime: linux-x64
+            setup: |
+              sudo apt-get update
+              sudo apt-get install ninja-build cmake
+              ninja --version
+              cmake --version
+              gcc --version
           - name: Windows
             os: windows-latest
             ext: .exe
-            c_compiler: cl
-            cpp_compiler: cl
+            runtime: win-x64
+            setup: |
+              choco install ninja cmake
+              ninja --version
+              cmake --version
 
     steps:
       - uses: actions/checkout@master
         with:
           submodules: recursive
 
+      - name: Install Dependencies
+        run: ${{ matrix.config.setup }}
+
       - name: Configure
         shell: bash
         run: |
           mkdir ./build
           ${{ matrix.config.vars }} \
-          cmake \
+          cmake --no-warn-unused-cli \
             -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE \
             -DCMAKE_BUILD_TYPE:STRING=Release \
-            -DCMAKE_CXX_COMPILER=${{ matrix.config.cpp_compiler }} \
-            -DCMAKE_C_COMPILER=${{ matrix.config.c_compiler }} \
-            -B ./build/
+            -DCMAKE_CXX_COMPILER=g++-13
+            -DCMAKE_C_COMPILER=g++-13
+            -B ./build/ \
+            -G "Ninja"
 
       - name: Build
         shell: bash
