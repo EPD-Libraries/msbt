@@ -27,8 +27,13 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Compiler
-        uses: ${{ matrix.config.compiler }}
+      - name: Install GCC (Linux)
+        if: ${{ matrix.config.os == 'ubuntu-latest' }}
+        uses: egor-tensin/setup-gcc@v1.3
+
+      - name: Install MinGW (Windows)
+        if: ${{ matrix.config.os == 'windows-latest' }}
+        uses: egor-tensin/setup-mingw@v2.2
 
       - name: Install ninja-build tools
         uses: seanmiddleditch/gha-setup-ninja@v4
